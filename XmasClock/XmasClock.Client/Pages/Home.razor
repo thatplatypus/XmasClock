@@ -1,0 +1,52 @@
+﻿@inject IJSRuntime JSRuntime
+@rendermode @(new InteractiveAutoRenderMode(prerender: false)) 
+@page "/"
+
+<PageTitle>Christmas Countdown 2023 - Find out how many days until Christmas!</PageTitle>
+
+<XmasClock.Client.Components.Header />
+
+<div class="countdown">
+    @if(_loading)
+    {
+        <div class="christmas-tree-container">
+            <XmasClock.Client.Components.ChristmasTree />
+        </div>
+        <div>Loading<span><XmasClock.Client.Components.EllipsisLoader /></span></div>
+    }
+    else
+    {
+        <XmasClock.Client.Components.Countdown EndDate="new DateTime(DateTime.Today.Year, 12, 25)" WaitingMessage="until Christmas" FinishedMessage="It's Christmas!" />
+        <div class="present-container">
+            @for(int i = 0; i < _presentCount; i++)
+            {
+                <XmasClock.Client.Components.Present />
+            }
+        </div>
+    }
+</div>
+
+<XmasClock.Client.Components.Footer />
+
+
+@code {
+    private bool _loading = true;
+
+    private int _presentCount = 1;
+
+    protected async Task AddPresentAsync()
+    {
+        _presentCount++;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
